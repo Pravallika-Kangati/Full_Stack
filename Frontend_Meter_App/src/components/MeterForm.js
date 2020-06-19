@@ -1,5 +1,6 @@
 import React from 'react';
 import axios from 'axios';
+import ChartForm from './ChartForm';
 
 class MeterForm extends React.Component {
 	constructor(props) {
@@ -100,36 +101,7 @@ class MeterForm extends React.Component {
 				</form>
 				<div>
 					{this.state.meter.length ? (
-						<div>
-							<h1 className='text-center'>Meter Table data</h1>
-							<table
-								className='table col-4 center'
-								style={{
-									background: 'White',
-									color: 'black',
-									marginLeft: 'auto',
-									marginRight: 'auto',
-								}}>
-								<thead>
-									<tr>
-										<th>Serial</th>
-										<th>ReadingDateTimeUTC</th>
-										<th>WH</th>
-										<th>VARH</th>
-									</tr>
-								</thead>
-								<tbody>
-									{this.state.meter.map((data) => (
-										<tr key={data.WH}>
-											<td>{data.Serial}</td>
-											<td>{data.ReadingDateTimeUTC}</td>
-											<td>{data.WH}</td>
-											<td>{data.VARH}</td>
-										</tr>
-									))}
-								</tbody>
-							</table>
-						</div>
+						<ChartForm chartdata={this.state.meter} />
 					) :
 						 (
 						<div></div>
