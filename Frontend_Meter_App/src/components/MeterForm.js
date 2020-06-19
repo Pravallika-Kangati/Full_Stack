@@ -60,7 +60,7 @@ class MeterForm extends React.Component {
 
 	showingTable() {
 		const meterdata = this.state.data.filter(
-			(meter) => meter.Serial.toUpperCase() === this.state.serial.toUpperCase()
+			(meter) => meter.Serial === this.state.serial.toUpperCase()
 		);
 		if(meterdata.length === 0){
 			this.setState({message:"Meter Data Not Found"});
