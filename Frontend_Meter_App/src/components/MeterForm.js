@@ -101,7 +101,7 @@ class MeterForm extends React.Component {
 				<div>
 					{this.state.meter.length ? (
 						<div>
-							<h1>Table data</h1>
+							<h1 className='text-center'>Meter Table data</h1>
 							<table
 								className='table col-4 center'
 								style={{
