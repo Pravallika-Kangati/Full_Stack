@@ -16,3 +16,7 @@
 ### `npm i `
 
 ### `npm i axios`
+
+### `npm i --save react-chartjs-2`
+
+### `npm i --save chart.js`
