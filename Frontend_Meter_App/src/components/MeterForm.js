@@ -1,91 +1,144 @@
 import React from 'react';
 import axios from 'axios';
 
-class MeterForm extends React.Component{
-    constructor (props){
-        super(props);
-        this.state = {
-            serial : "METER000001",
-            data : [],
-            message: '',
-            formErrors: {
-                serialErr: ''
-            },
-            fieldValidity: {
-                serial: false
-            },
-            formValid: false,
-        }
-    }
+class MeterForm extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			serial: '',
+			data: [],
+			message: '',
+			meter: [],
+			formErrors: {
+				serialErr: '',
+			},
+			fieldValidity: {
+				serial: false,
+			},
+			formValid: false,
+		};
+	}
 
-    handleChange = (e) => {
-        const serialValue = e.target.value;
-        var formErrors = this.state.formErrors;
-        var fieldValidity = this.state.fieldValidity;
-        this.setState({ serial: serialValue });
-        if (serialValue.length === 0) {
-            formErrors.serialErr = "Serial Should not be empty";
-            fieldValidity.serial = false;
-        }
-        else {
-            formErrors.serialErr = "";
-            fieldValidity.serial = true;
-        }
-        this.setState({ fieldValidity: fieldValidity })
-        this.setState({ formValid: fieldValidity.serial})
-    }
+	handleChange = (e) => {
+		const serialValue = e.target.value;
+		var formErrors = this.state.formErrors;
+		var fieldValidity = this.state.fieldValidity;
+		this.setState({ serial: serialValue });
+		if (serialValue.length === 0) {
+			formErrors.serialErr = 'Serial Should not be empty';
+			fieldValidity.serial = false;
+		} else {
+			formErrors.serialErr = '';
+			fieldValidity.serial = true;
+		}
+		this.setState({ fieldValidity: fieldValidity });
+		this.setState({ formValid: fieldValidity.serial });
 
-    handleSearch = (e) => {
-        e.preventDefault();
-        if (this.state.formValid) {
-            if(this.state.data.length === 0){
-                this.setState({message : "Meter Data not found"});
-            }
-            else{
-                this.setState({message:''});
-                return(
-                    <React.Fragment>
-                        <div>
-                            <h1>Table data</h1>
-                            <table className="table col-4 center" style={{"background":"White","color":"black","marginLeft":"auto", "marginRight":"auto"}}>
-                                <thead>
-                                <tr>
-                                <th>Serial</th><th>ReadingDateTimeUTC</th><th>WH</th><th>VARH</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                    {this.state.data.map((data)=> <tr key={this.state.data.Serial}><td>{this.state.data.Serial}</td><td>{this.state.data.ReadingDateTimeUTC}</td><td>{this.state.data.WH}</td><td>{this.state.data.VARH}</td></tr>)}
-                                </tbody>
-                            </table>
-                        </div>
-                    </React.Fragment>
-                )
-            }
-        }
-    }
+		const meterdata = this.state.data.filter(
+			(meter) => meter.Serial === this.state.serial
+		);
+		this.setState({ meter: meterdata });
+	};
 
-    componentDidMount(){
-        axios.get('http://localhost:3001/meter_data/METER000002')
-        .then(res=>this.setState({data:res.data})
-        .catch(err => this.setState({message:err}))
-    }
+	handleSearch = (e) => {
+		e.preventDefault();
 
-    render(){
-        return(
-            <div style={{width:500, margin:'0px auto'}}>
-                <h3 className="text-center">Meter Consumption Data App</h3>
-                <form >
-                    <div className="form-group">
-                        <label>Serial:</label>
-                        <input className="form-control" onChange={this.handleChange} value={this.state.serial} />
-                    </div>
-                    <span className="text-danger">{this.state.formErrors.serialErr}</span><br/>
-                    <button type="button" onClick={this.handleSearch} className="btn btn-success" disabled={!this.state.formValid}>Search</button><br/>
-                    <span className="text-danger">{this.state.message}</span>
-                </form>
-            </div>
-        )
-    }
+		if (this.state.data.length === 0) {
+			this.setState({ message: 'Meter Data not found' });
+		} else {
+			this.setState({ message: '' });
+			this.showingTable();
+		}
+	};
+
+	componentDidMount() {
+		axios
+			.get('http://localhost:3001/meter_data/')
+			.then((res) => this.setState({ data: res.data }))
+			.catch((err) => console.log('error: ', err));
+	}
+
+	showingTable() {
+		const meterdata = this.state.data.filter(
+			(meter) => meter.Serial.toUpperCase() === this.state.serial.toUpperCase()
+		);
+		console.log(meterdata);
+		if(meterdata.length === 0){
+			this.setState({message:"Meter Data Not Found"});
+			this.setState({meter:[]});
+		}
+		if(meterdata.length >0){
+			this.setState({message:''});
+			let limit = meterdata.slice(0, 5);
+			this.setState({ meter: limit });
+		}
+	}
+
+	render() {
+		return (
+			<div style={{ width: 500, margin: '0px auto' }}>
+				<h3 className='text-center'>Meter Consumption Data App</h3>
+				<form>
+					<div className='form-group'>
+						<label>Serial:</label>
+						<input
+							className='form-control'
+							onChange={this.handleChange}
+							value={this.state.serial}
+						/>
+					</div>
+					<span className='text-danger'>{this.state.formErrors.serialErr}</span>
+					<br />
+					<button
+						type='button'
+						onClick={this.handleSearch}
+						className='btn btn-success'
+						disabled={!this.state.formValid}>
+						Search
+					</button>
+					<br />
+					<span className='text-danger'>{this.state.message}</span>
+				</form>
+				<div>
+					{this.state.meter.length ? (
+						<div>
+							<h1>Table data</h1>
+							<table
+								className='table col-4 center'
+								style={{
+									background: 'White',
+									color: 'black',
+									marginLeft: 'auto',
+									marginRight: 'auto',
+								}}>
+								<thead>
+									<tr>
+										<th>Serial</th>
+										<th>ReadingDateTimeUTC</th>
+										<th>WH</th>
+										<th>VARH</th>
+									</tr>
+								</thead>
+								<tbody>
+									{this.state.meter.map((data) => (
+										<tr key={data.Serial}>
+											<td>{data.Serial}</td>
+											<td>{data.ReadingDateTimeUTC}</td>
+											<td>{data.WH}</td>
+											<td>{data.VARH}</td>
+										</tr>
+									))}
+								</tbody>
+							</table>
+						</div>
+					) :
+						 (
+						<div></div>
+					)}
+				</div>
+			</div>
+		);
+	}
 }
 
 export default MeterForm;
