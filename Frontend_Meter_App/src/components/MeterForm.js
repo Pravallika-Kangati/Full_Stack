@@ -62,7 +62,6 @@ class MeterForm extends React.Component {
 		const meterdata = this.state.data.filter(
 			(meter) => meter.Serial.toUpperCase() === this.state.serial.toUpperCase()
 		);
-		console.log(meterdata);
 		if(meterdata.length === 0){
 			this.setState({message:"Meter Data Not Found"});
 			this.setState({meter:[]});
@@ -121,7 +120,7 @@ class MeterForm extends React.Component {
 								</thead>
 								<tbody>
 									{this.state.meter.map((data) => (
-										<tr key={data.Serial}>
+										<tr key={data.WH}>
 											<td>{data.Serial}</td>
 											<td>{data.ReadingDateTimeUTC}</td>
 											<td>{data.WH}</td>
